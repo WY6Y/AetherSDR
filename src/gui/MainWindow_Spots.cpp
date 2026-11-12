@@ -24,6 +24,7 @@
 #include "core/SpotCommandPolicy.h"
 #ifdef HAVE_MQTT
 #include "MqttApplet.h"
+#include "ExtAmpMeterApplet.h"
 #include "core/MqttAntennaAlias.h"
 #include "core/MqttSettings.h"
 #endif
@@ -88,14 +89,23 @@ void MainWindow::wireSpotSubsystem()
 #ifdef HAVE_MQTT
     m_mqttClient = new MqttClient(this);
     m_appletPanel->mqttApplet()->setMqttClient(m_mqttClient);
+    m_appletPanel->extAmpMeterApplet()->setMqttClient(m_mqttClient);
 
     connect(m_appletPanel->mqttApplet(), &MqttApplet::connectRequested,
             this, [this](const QString& host, quint16 port,
                          const QString& user, const QString& pass,
                          const QStringList& topics,
                          bool useTls, const QString& caFile) {
-        m_mqttClient->setSubscriptions(mqttSubscriptionTopics(topics));
+        m_mqttClient->setSubscriptions(mqttSubscriptionTopics(
+            topics + m_appletPanel->extAmpMeterApplet()->subscriptionTopics()));
         m_mqttClient->connectToBroker(host, port, user, pass, useTls, caFile);
+    });
+    // The amp meter's topic root was edited: resubscribe without a reconnect.
+    connect(m_appletPanel->extAmpMeterApplet(), &ExtAmpMeterApplet::subscriptionTopicsChanged,
+            this, [this] {
+        m_mqttClient->setSubscriptions(mqttSubscriptionTopics(
+            mqttUserSubscriptionTopics(loadMqttTopicConfig())
+            + m_appletPanel->extAmpMeterApplet()->subscriptionTopics()));
     });
     connect(m_appletPanel->mqttApplet(), &MqttApplet::disconnectRequested,
             this, [this] { m_mqttClient->disconnect(); });

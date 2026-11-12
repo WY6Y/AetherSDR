@@ -905,6 +905,7 @@ set(CORE_SOURCES
     src/core/LocationAddressResolver.cpp
     src/core/MqttAntennaAlias.cpp
     src/core/MqttRadioState.cpp
+    src/core/ExtAmpMeterReading.cpp
     src/core/MqttSettings.cpp
     src/core/AutomationBridgeSettings.cpp
     src/core/CatSettings.cpp  # owned config object, "CatServer" root key (Principle V)
@@ -1192,6 +1193,7 @@ set(GUI_SOURCES
     src/gui/CrossNeedleMeterGeometry.cpp
     src/gui/CrossNeedleMeterWidget.cpp
     src/gui/CrossNeedleMeterApplet.cpp
+    src/gui/ExtAmpMeterApplet.cpp
     src/gui/CrossNeedleMeterSettings.cpp
     src/gui/VuMeterSettings.cpp
     src/gui/TunerApplet.cpp

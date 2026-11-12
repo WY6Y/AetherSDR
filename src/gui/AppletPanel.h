@@ -65,6 +65,7 @@ class MeterApplet;
 class ProfileSwitcherApplet;
 class HealthApplet;
 class MqttApplet;
+class ExtAmpMeterApplet;
 class KiwiSdrApplet;
 class FavoritesPickerDialog;
 #ifdef HAVE_RADE
@@ -165,6 +166,7 @@ public:
 #endif
 #ifdef HAVE_MQTT
     MqttApplet*   mqttApplet()   { return m_mqttApplet; }
+    ExtAmpMeterApplet* extAmpMeterApplet() { return m_extAmpMeterApplet; }
 #endif
 
     // Show/hide the TUNE button and applet based on tuner presence.
@@ -454,6 +456,7 @@ private:
 #endif
 #ifdef HAVE_MQTT
     MqttApplet*  m_mqttApplet{nullptr};
+    ExtAmpMeterApplet* m_extAmpMeterApplet{nullptr};
 #endif
     QPushButton* m_tuneBtn{nullptr};
     QPushButton* m_agBtn{nullptr};

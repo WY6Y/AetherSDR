@@ -48,6 +48,7 @@
 #endif
 #ifdef HAVE_MQTT
 #include "MqttApplet.h"
+#include "ExtAmpMeterApplet.h"
 #endif
 #include "models/SliceModel.h"
 #include <QAction>
@@ -1089,6 +1090,25 @@ AppletPanel::AppletPanel(QWidget* parent) : QWidget(parent)
 #ifdef HAVE_MQTT
     m_mqttApplet = new MqttApplet;
     m_appletOrder.append(makeEntry("MQTT", "MQTT", m_mqttApplet, false, m_drawer, m_drawerLayout));
+
+    // External amp meter: a second cross-needle fed by an MQTT power sensor
+    // after the amplifier, beside the radio's own PWR meter. Off by default;
+    // it only does anything once a topic root is configured.
+    m_extAmpMeterApplet = new ExtAmpMeterApplet;
+    {
+        AppletEntry entry = makeEntry("XAMP", "Amp Meter (MQTT)", m_extAmpMeterApplet, false,
+                                      m_drawer, m_drawerLayout);
+        if (ContainerWidget* container = qobject_cast<ContainerWidget*>(entry.widget)) {
+            // Same face as PWR plus a header and readout row.
+            container->setDefaultFloatingSize(QSize(640, 500));
+            connect(container, &ContainerWidget::dockModeChanged, m_extAmpMeterApplet,
+                    [this](ContainerWidget::DockMode mode) {
+                        m_extAmpMeterApplet->setFloating(
+                            mode != ContainerWidget::DockMode::PanelDocked);
+                    });
+        }
+        m_appletOrder.append(entry);
+    }
 #endif
 
     // Place the drawer toggle into the favorites row, then apply the
@@ -1383,6 +1403,7 @@ QList<AppletPanel::AppletCatalogEntry> AppletPanel::appletCatalog() const
         {QStringLiteral("PWR"),   QStringLiteral("Metering")},
         {QStringLiteral("MTR"),   QStringLiteral("Metering")},
         {QStringLiteral("LP100"), QStringLiteral("Metering")},
+        {QStringLiteral("XAMP"),  QStringLiteral("Metering")},
         {QStringLiteral("HLTH"),  QStringLiteral("Antennas & Switching")},
         {QStringLiteral("AG"),    QStringLiteral("Antennas & Switching")},
         {QStringLiteral("SS"),    QStringLiteral("Antennas & Switching")},

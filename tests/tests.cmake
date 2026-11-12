@@ -4058,6 +4058,16 @@ if(UNIX)
 endif()
 add_test(NAME mqtt_radio_state_test COMMAND mqtt_radio_state_test)
 
+# External amp meter (MQTT) payload contract: presence-keyed fields, and the
+# frequency-to-band key for the per-band power correction. Pure; Qt Core only.
+add_executable(ext_amp_meter_reading_test
+    tests/ext_amp_meter_reading_test.cpp
+    src/core/ExtAmpMeterReading.cpp
+)
+target_include_directories(ext_amp_meter_reading_test PRIVATE src)
+target_link_libraries(ext_amp_meter_reading_test PRIVATE Qt6::Core)
+add_test(NAME ext_amp_meter_reading_test COMMAND ext_amp_meter_reading_test)
+
 add_executable(mqtt_settings_test
     tests/mqtt_settings_test.cpp
     src/core/MqttSettings.cpp
